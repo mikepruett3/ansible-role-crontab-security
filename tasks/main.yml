@@ -112,7 +112,21 @@
     path: /etc/at.allow
   register: file_exists
 
-- name: "Ensure appropriate permission and owner is configured for /etc/at.allow"
+- name: "Set Fact for file_exists"
+  ansible.builtin.setfact:
+    at_file_exists: '{{ file_exists.stat.exists }}'
+
+- name: "Ensure appropriate permissio and owner is configured for /etc/at.allow"
+  ansible.builtin.file:
+    path: /etc/at.allow
+    owner: root
+    group: "{{ crontab_group }}"
+    mode: '0640'
+  when:
+    - at_file_exists is defined
+    - at_file_exists == true
+
+- name: "Ensure appropriate permission, owner and content is configured for /etc/at.allow"
   ansible.builtin.copy:
     dest: /etc/at.allow
     owner: root
@@ -121,8 +135,8 @@
     content: |
       root
   when:
-    - file_exists.stat is defined
-    #- file_exists.stat.exists == false
+    - at_file_exists is defined
+    - at_file_exists != true
 
 - name: "Remove /etc/cron.deny file"
   ansible.builtin.file:
@@ -134,7 +148,21 @@
     path: /etc/cron.allow
   register: file_exists
 
+- name: "Set Fact for file_exists"
+  ansible.builtin.setfact:
+    cron_file_exists: '{{ file_exists.stat.exists }}'
+
 - name: "Ensure appropriate permission and owner is configured for /etc/cron.allow"
+  ansible.builtin.file:
+    path: /etc/cron.allow
+    owner: root
+    group: "{{ crontab_group }}"
+    mode: '0640'
+  when:
+    - cron_file_exists is defined
+    - cron_file_exists == true
+
+- name: "Ensure appropriate permission, owner and content is configured for /etc/cron.allow"
   ansible.builtin.copy:
     dest: /etc/cron.allow
     owner: root
@@ -143,5 +171,5 @@
     content: |
       root
   when:
-    - file_exists.stat is defined
-    #- file_exists.stat.exists == false
+    - cron_file_exists is defined
+    - cron_file_exists != true
