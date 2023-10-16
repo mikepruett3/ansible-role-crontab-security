@@ -1,2 +1,4 @@
 ---
 # defaults file for ansible-role-crontab-security
+
+crontab_group: 'crontab'

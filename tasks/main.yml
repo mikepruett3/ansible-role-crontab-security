@@ -1,6 +1,11 @@
 ---
 # tasks file for ansible-role-crontab-security
 
+- name: "Ensure group crontab exists"
+  ansible.builtin.group:
+    name: "{{ crontab_group }}"
+    state: present
+
 - name: "Test for existence /etc/crontab"
   ansible.builtin.stat:
     path: /etc/crontab
@@ -13,7 +18,9 @@
     group: root
     mode: '0600'
     state: file
-  when: file_exists.stat is defined and file_exists.stat.exists
+  when:
+    - file_exists.stat is defined
+    - file_exists.stat.exists
 
 - name: "Test for existence /etc/cron.hourly"
   ansible.builtin.stat:
@@ -27,7 +34,9 @@
     group: root
     mode: '0700'
     state: directory
-  when: folder_exists.stat is defined and folder_exists.stat.exists
+  when:
+    - folder_exists.stat is defined
+    - folder_exists.stat.exists
 
 - name: "Test for existence /etc/cron.daily"
   ansible.builtin.stat:
@@ -41,6 +50,9 @@
     group: root
     mode: '0700'
     state: directory
+  when:
+    - folder_exists.stat is defined
+    - folder_exists.stat.exists
 
 - name: "Test for existence /etc/cron.weekly"
   ansible.builtin.stat:
@@ -54,6 +66,9 @@
     group: root
     mode: '0700'
     state: directory
+  when:
+    - folder_exists.stat is defined
+    - folder_exists.stat.exists
 
 - name: "Test for existence /etc/cron.monthly"
   ansible.builtin.stat:
@@ -67,6 +82,9 @@
     group: root
     mode: '0700'
     state: directory
+  when:
+    - folder_exists.stat is defined
+    - folder_exists.stat.exists
 
 - name: "Test for existence /etc/cron.d"
   ansible.builtin.stat:
@@ -80,6 +98,9 @@
     group: root
     mode: '0700'
     state: directory
+  when:
+    - folder_exists.stat is defined
+    - folder_exists.stat.exists
 
 - name: "Remove /etc/at.deny file"
   ansible.builtin.file:
@@ -95,11 +116,13 @@
   ansible.builtin.copy:
     dest: /etc/at.allow
     owner: root
-    group: root
-    mode: '0600'
+    group: "{{ crontab_group }}"
+    mode: '0640'
     content: |
       root
-  when: file_exists.stat is defined and file_exists.stat.exists == false
+  when:
+    - file_exists.stat is defined
+    - file_exists.stat.exists == false
 
 - name: "Remove /etc/cron.deny file"
   ansible.builtin.file:
@@ -115,8 +138,10 @@
   ansible.builtin.copy:
     dest: /etc/cron.allow
     owner: root
-    group: root
-    mode: '0600'
+    group: "{{ crontab_group }}"
+    mode: '0640'
     content: |
       root
-  when: file_exists.stat is defined and file_exists.stat.exists == false
+  when:
+    - file_exists.stat is defined
+    - file_exists.stat.exists == false
