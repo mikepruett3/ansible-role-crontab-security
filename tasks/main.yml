@@ -113,7 +113,7 @@
   register: file_exists
 
 - name: "Set Fact for file_exists"
-  ansible.builtin.setfact:
+  ansible.builtin.set_fact:
     at_file_exists: '{{ file_exists.stat.exists }}'
 
 - name: "Ensure appropriate permissio and owner is configured for /etc/at.allow"
@@ -149,7 +149,7 @@
   register: file_exists
 
 - name: "Set Fact for file_exists"
-  ansible.builtin.setfact:
+  ansible.builtin.set_fact:
     cron_file_exists: '{{ file_exists.stat.exists }}'
 
 - name: "Ensure appropriate permission and owner is configured for /etc/cron.allow"
