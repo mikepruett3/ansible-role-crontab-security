@@ -122,7 +122,7 @@
       root
   when:
     - file_exists.stat is defined
-    - file_exists.stat.exists == false
+    #- file_exists.stat.exists == false
 
 - name: "Remove /etc/cron.deny file"
   ansible.builtin.file:
@@ -144,4 +144,4 @@
       root
   when:
     - file_exists.stat is defined
-    - file_exists.stat.exists == false
+    #- file_exists.stat.exists == false
